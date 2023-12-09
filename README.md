@@ -20,7 +20,7 @@ Embark on a visual journey into the Mandelbrot and Julia sets with this CUDA-acc
 - C++ compiler with CUDA support
 - SDL library for graphics rendering
 ## Usage
-The program integrates ImGui for a user-friendly interface, making it easy to adjust visualization parameters on the fly. Compile the provided source code with a C++ compiler supporting CUDA. 
+The program integrates ImGui for a user-friendly interface, making it easy to adjust visualization parameters on the fly. Compile the provided source code with a C++ compiler supporting CUDA.
 
 Explore the Mandelbrot and Julia sets with intuitive mouse interactions. Use the mouse wheel to zoom in or out dynamically, focusing on the area pointed to by the cursor. This allows for precise navigation within the fractal space.
 
@@ -28,10 +28,12 @@ Explore the Mandelbrot and Julia sets with intuitive mouse interactions. Use the
 ![](screenshots/zoom.gif)
 
 Modify the starting point $z_0$​ for the Mandelbrot set or the constant $c$ for the Julia set by left-click dragging within the window. This feature allows users to dynamically adjust the initial parameters of the fractals.
+
+<img src="/screenshots/move.gif">
 ![](screenshots/move.gif)
 
 Utilize the *Properties* window to control various aspects of the fractal visualization:
-- **Switch between Mandelbrot and Julia sets** using the radio buttons in the *Type* section of the window. 
+- **Switch between Mandelbrot and Julia sets** using the radio buttons in the *Type* section of the window.
 - **Adjust maximum iterations at zoom 1.0:** Locate a setting in the ImGui window that enables you to modify the maximum iterations used in the algorithm when the zoom level is at 1.0. This parameter influences the level of detail visible in the fractal at the default zoom.
 - **Control Iteration Count Increase with Zoom:** The field in the *Iteration increase falloff* section allows you to adjust how quickly the iteration count increases as you zoom in. This parameter governs the refinement of details as you zoom into the fractal, offering a balance between performance and visual intricacy.
 
@@ -54,8 +56,8 @@ while ((z.x * z.x + z.y * z.y <= 4.0f) && (iter < maxIterations)) {
 	iter++;
 }
 ```
-  
-This code snippet represents the iterative calculation in the Mandelbrot set. 
+
+This code snippet represents the iterative calculation in the Mandelbrot set.
 The loop continues as long as the magnitude of $z$ remains within a specified range and the iteration count is below a maximum threshold. In the Mandelbrot set, points where $z$ stays within this range are part of the set, contributing to the formation of the fractal patterns.
 
 ### CUDA
