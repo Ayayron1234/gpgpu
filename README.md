@@ -92,7 +92,7 @@ In the following code blocks, GPU memory is allocated for storing RGB values, an
 	```cpp
 	RGB* gpuBuffer = 0; 
 	cudaStatus = cudaMalloc((void**)&gpuBuffer, 
-							windowWidth * windowHeight * sizeof(RGB));
+				windowWidth * windowHeight * sizeof(RGB));
 	```
 	- Declares a pointer `gpuBuffer` of type `RGB*` and initializes it to `0` (null).
 	- Allocates device memory on the GPU using CUDA for `gpuBuffer`, which will store RGB values.
@@ -121,9 +121,9 @@ In the following code blocks, GPU memory is allocated for storing RGB values, an
 4. **Memory Copy from GPU to Host:**
 	```cpp
 	cudaStatus = cudaMemcpy((char*)GetOutputBuffer(), 
-							gpuBuffer, 
-							windowWidth * windowHeight * sizeof(IORGB), 
-							cudaMemcpyDeviceToHost);
+				gpuBuffer, 
+				windowWidth * windowHeight * sizeof(IORGB), 
+				cudaMemcpyDeviceToHost);
 	```
     - Copies the data from the GPU buffer `gpuBuffer` to the host (CPU) memory.
     - `IO::GetOutputBuffer()` retrieves the host memory buffer where the result will be stored.
