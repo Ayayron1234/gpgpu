@@ -35,7 +35,6 @@ Explore the Mandelbrot and Julia sets with intuitive mouse interactions. Use the
 
 Modify the starting point $z_0$​ for the Mandelbrot set or the constant $c$ for the Julia set by left-click dragging within the window. This feature allows users to dynamically adjust the initial parameters of the fractals.
 
-<img src="/screenshots/move.gif">
 
 ![](screenshots/move.gif)
 
