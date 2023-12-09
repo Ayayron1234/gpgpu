@@ -81,14 +81,14 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="fractals.cu" />
+    <CudaCompile Include="src\fractals.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IO.h" />
-    <ClInclude Include="vec2.h" />
+    <ClInclude Include="src\IO.h" />
+    <ClInclude Include="src\vec2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IO.cpp" />
+    <ClCompile Include="src\IO.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
