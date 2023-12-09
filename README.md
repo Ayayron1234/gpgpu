@@ -17,6 +17,9 @@ Embark on a visual journey into the Mandelbrot and Julia sets with this CUDA-acc
 
 The program integrates ImGui for a user-friendly interface, making it easy to adjust visualization parameters on the fly. Compile the provided source code with a C++ compiler supporting CUDA, SDL, and ImGui. Experience the captivating landscapes of the Mandelbrot and Julia sets while dynamically tweaking parameters through the ImGui interface.
 
+![](screenshots/max-iterations.gif)
+
+
 ## System Requirements
 
 - NVIDIA GPU with CUDA support

@@ -1,46 +1,9 @@
-﻿#include "utils/Json.h"
+﻿#include "fractals.h"
+
 #include "utils/ExternalResource.h"
 #include "IO.h"
 
 #include <stdio.h>
-
-JSON_C(vec2, JSON_M(x), JSON_M(y))
-
-struct Camera {
-    vec2 position;
-    Float zoom;
-}; JSON_C(Camera, JSON_M(position), JSON_M(zoom))
-
-enum class FractalType { Mandelbrot = 0x00, Julia, _COUNT };
-
-struct Options {
-    int windowWidth, windowHeight;
-    Camera camera{ vec2(), 0.2 };
-
-    FractalType type = FractalType::Julia;
-    int baseIterations = 50;
-    Float iterationIncreaseFallOff = 12.l;
-    vec2 z0;
-    vec2 c;
-
-    void SetProperty(vec2 value) {
-        switch (type)
-        {
-        case FractalType::Mandelbrot:
-            c = value; break;
-        case FractalType::Julia:
-            z0 = value; break;
-        default:
-            break;
-        }
-    }
-
-    __device__ __host__ vec2 GetProperty() {
-        if (type == FractalType::Mandelbrot) return c;
-        return z0;
-    }
-
-}; JSON_C(Options, JSON_M(windowWidth), JSON_M(windowHeight), JSON_M(camera), JSON_M(type), JSON_M(z0), JSON_M(c))
 
 __device__ vec2 calcNext(vec2 z, vec2 c) {
     const Float zr = z.x * z.x - z.y * z.y;
@@ -157,55 +120,4 @@ Error:
     cudaFree(gpuBuffer);
 
     return cudaStatus;
-}
-
-auto& g_options = external_resource<"options.json", Json::wrap<Options>>::value;
-
-int main() {
-    IO::OpenWindow(g_options.windowWidth, g_options.windowHeight);
-    
-    vec2 dragStart; // normalized
-    while (!SDL_QuitRequested()) {
-        IO::HandleEvents();
-        g_options.windowWidth = IO::GetWindowWidth();
-        g_options.windowHeight = IO::GetWindowHeight();
-
-        vec2 normalizedMousePos = IO::NormalizePixel(IO::GetMousePos().x, IO::GetMousePos().y);
-
-        const Uint8* state = SDL_GetKeyboardState(nullptr);
-        if (state[SDL_SCANCODE_SPACE]) {
-            g_options.SetProperty({ 0, 0 });
-            g_options.camera.position = { 0, 0 };
-            g_options.camera.zoom = 0.2;
-        }
-
-        static vec2 z0Start;
-        if (IO::MouseClicked(SDL_BUTTON_LEFT)) {
-            z0Start = g_options.GetProperty();
-            dragStart = normalizedMousePos;
-        }
-        if (IO::IsButtonDown(SDL_BUTTON_LEFT)) {
-            g_options.SetProperty(z0Start + 0.25l * (normalizedMousePos - dragStart) / g_options.camera.zoom);
-        }
-
-        static Float zoom = 1.l;
-        static Float zoomDP = 1.02;
-        static Float zoomDN = 1.035;
-        if (IO::GetMouseWheel() > 0) 
-            zoom = zoomDP;
-        else if (IO::GetMouseWheel() < 0)
-            zoom = 1.l / zoomDN;
-        if (abs(zoom - 1.l) > 0.0001f)
-            g_options.camera.position = g_options.camera.position - 0.5l * normalizedMousePos / g_options.camera.zoom + 0.5l * normalizedMousePos / (g_options.camera.zoom * zoom);
-        g_options.camera.zoom *= zoom;
-        zoom = 1.l + (zoom - 1.l) * 0.975l;
-
-        mandelbrotCuda(g_options, (float)g_options.baseIterations * powl(g_options.camera.zoom, 1.0l / g_options.iterationIncreaseFallOff));
-        
-    	IO::Render();
-    }
-    
-    IO::Quit();
-
-    return 0;
 }
