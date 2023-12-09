@@ -6,9 +6,6 @@
 
 #include <iostream>
 
-static int g_windowWidth;
-static int g_windowHeight;
-
 namespace IO {
 
 struct RGB {
@@ -16,16 +13,13 @@ struct RGB {
 	char g = 0;
 	char b = 0;
 	char a = 0;
-};
-
-struct Camera {
-	vec2 position;
-	Float zoom;
-};
+}; 
 
 struct OutputBuffer {
-	RGB* buffer = new RGB[800 * 800];
+	RGB* buffer = nullptr;
 	SDL_Texture* texture;
+
+	void resize(int width, int height);
 };
 
 struct SDL_Instance {
@@ -35,6 +29,8 @@ struct SDL_Instance {
 	Uint8 mouseButtons = 0;
 	Uint8 prevMouseButtons = 0;
 	float mouseScrollAmount = 0;
+
+	int windowWidth, windowHeight;
 
 	OutputBuffer output;
 	
@@ -55,19 +51,20 @@ void Quit() {
 }
 
 void OpenWindow(int width, int height) {
-	g_windowWidth = width;
-	g_windowHeight = height;
+	SDL_Instance::instance().windowWidth = width;
+	SDL_Instance::instance().windowHeight = height;
 
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	SDL_Instance::instance().window = SDL_CreateWindow("GPGPU", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, g_windowWidth, g_windowHeight, SDL_WINDOW_RESIZABLE);
+	SDL_Instance::instance().window = SDL_CreateWindow("GPGPU", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SDL_Instance::instance().windowWidth, SDL_Instance::instance().windowHeight, SDL_WINDOW_RESIZABLE);
 	SDL_Instance::instance().renderer = SDL_CreateRenderer(SDL_Instance::instance().window, -1, SDL_RENDERER_ACCELERATED);
 
-	SDL_Instance::instance().output.texture = SDL_CreateTexture(SDL_Instance::instance().renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, g_windowWidth, g_windowHeight);
+	SDL_Instance::instance().output.texture = SDL_CreateTexture(SDL_Instance::instance().renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, SDL_Instance::instance().windowWidth, SDL_Instance::instance().windowHeight);
+	SDL_Instance::instance().output.buffer = new RGB[width * height];
 }
 
 void Render() {
-	SDL_UpdateTexture(SDL_Instance::instance().output.texture, nullptr, SDL_Instance::instance().output.buffer, sizeof(IO::RGB) * g_windowWidth);
+	SDL_UpdateTexture(SDL_Instance::instance().output.texture, nullptr, SDL_Instance::instance().output.buffer, sizeof(IO::RGB) * SDL_Instance::instance().windowWidth);
 	SDL_RenderCopy(SDL_Instance::instance().renderer, SDL_Instance::instance().output.texture, nullptr, nullptr);
 
 	SDL_RenderPresent(SDL_Instance::instance().renderer);
@@ -82,15 +79,11 @@ void HandleEvents() {
 	
 	int newWidth, newHeight;
 	SDL_GetWindowSize(SDL_Instance::instance().window, &newWidth, &newHeight);
-	if (newWidth != g_windowWidth || newHeight != g_windowHeight) {
-		delete[] SDL_Instance::instance().output.buffer;
-		SDL_Instance::instance().output.buffer = new RGB[newWidth * newHeight];
-		
-		g_windowWidth = newWidth;
-		g_windowHeight = newHeight;
+	if (newWidth != SDL_Instance::instance().windowWidth || newHeight != SDL_Instance::instance().windowHeight) {
+		SDL_Instance::instance().output.resize(newWidth, newHeight);
 
-		SDL_DestroyTexture(SDL_Instance::instance().output.texture);
-		SDL_Instance::instance().output.texture = SDL_CreateTexture(SDL_Instance::instance().renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, g_windowWidth, g_windowHeight);
+		SDL_Instance::instance().windowWidth = newWidth;
+		SDL_Instance::instance().windowHeight = newHeight;
 	}
 
 	SDL_Event event;
@@ -128,7 +121,7 @@ bool MouseReleased(Uint8 button) {
 }
 
 vec2 NormalizePixel(int x, int y) {
-	return { (2.f * x) / (Float)g_windowWidth - 1.f, ((2.f * y) / (Float)g_windowHeight - 1.f)};
+	return { (2.f * x) / (Float)SDL_Instance::instance().windowWidth - 1.f, ((2.f * y) / (Float)SDL_Instance::instance().windowHeight - 1.f)};
 }
 
 vec2 GetMousePos() {
@@ -143,6 +136,22 @@ float GetMouseWheel() {
 
 RGB* GetOutputBuffer() {
 	return SDL_Instance::instance().output.buffer;
+}
+
+int GetWindowWidth() {
+	return SDL_Instance::instance().windowWidth;
+}
+
+int GetWindowHeight() {
+	return SDL_Instance::instance().windowHeight;
+}
+
+void IO::OutputBuffer::resize(int width, int height) {
+	delete[] buffer;
+	SDL_DestroyTexture(texture);
+
+	buffer = new RGB[width * height];
+	texture = SDL_CreateTexture(SDL_Instance::instance().renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, width, height);
 }
 
 }
