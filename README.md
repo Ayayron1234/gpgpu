@@ -4,6 +4,7 @@
 
 Embark on a visual journey into the Mandelbrot and Julia sets with this CUDA-accelerated C++ program. Harnessing the parallel computing capabilities of NVIDIA's CUDA architecture, SDL for graphics rendering, and ImGui for a dynamic user interface, this program provides an immersive and interactive exploration of intricate fractal landscapes.
 
+![](julia.png)
 ## Features
 
 - **Dynamic Visualization:** Explore the Mandelbrot and Julia sets dynamically by adjusting parameters such as zoom, pan, and iteration count through the intuitive ImGui user interface.
