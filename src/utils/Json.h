@@ -172,7 +172,10 @@ public:
 	* ----------------- */
 
 	template <typename T>
-	struct wrap : public T { };
+	struct wrap : public T {
+		wrap() { }
+		wrap(const T& value) : T(value) {}
+	};
 
 private:
 

@@ -1,4 +1,14 @@
 #include "IO.h"
+#include <fstream>
+
+const wchar_t* GetWC(const char* c)
+{
+	const size_t cSize = strlen(c) + 1;
+	wchar_t* wc = new wchar_t[cSize];
+	mbstowcs(wc, c, cSize);
+
+	return wc;
+}
 
 namespace IO {
 
@@ -31,6 +41,7 @@ void OutputBuffer::resize(int width, int height) {
 void IO::HandleEvents() {
 	SDL_Instance::instance().prevMouseButtons = SDL_Instance::instance().mouseButtons;
 	SDL_Instance::instance().mouseScrollAmount = 0;
+	SDL_Instance::instance().droppedFilePath.clear();
 
 	int newWidth, newHeight;
 	SDL_GetWindowSize(SDL_Instance::instance().window, &newWidth, &newHeight);
@@ -56,6 +67,12 @@ void IO::HandleEvents() {
 		case SDL_MOUSEWHEEL:
 			SDL_Instance::instance().mouseScrollAmount = event.wheel.preciseY;
 			break;
+		case (SDL_DROPFILE): {
+			const wchar_t* path = GetWC(event.drop.file);
+			SDL_Instance::instance().droppedFilePath = path;
+			delete[] path;
+			break;
+		}
 		default:
 			break;
 		}

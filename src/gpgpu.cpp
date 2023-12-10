@@ -31,6 +31,47 @@ void ShowPropertiesWindow() {
     ImGui::End();
 }
 
+void HandleDroppedFile(const std::wstring& path) {
+    if (path.length() < 5 || path.substr(path.length() - 5).compare(L".json") != 0) {
+        std::cerr << "Invalid format. " << std::endl;
+        return;
+    }
+
+    std::ifstream ifs(path.c_str());
+    if (!ifs.is_open()) {
+        size_t len = wcslen(path.c_str()) + 1;
+        char* charPath = new char[len];
+        wcstombs(charPath, path.c_str(), len);
+
+        std::cerr << "Failed to open file: " << charPath << std::endl;
+        delete[] charPath;
+
+        return;
+    }
+
+    Options newOptions;
+    Json newOptionsJson;
+    try {
+        ifs >> newOptionsJson;
+        newOptions = newOptionsJson;
+    }
+    catch (...) {
+        std::cerr << "Couldn't load options from file. " << std::endl;
+        ifs.close();
+        return;
+    }
+    ifs.close();
+
+    g_options = Json::wrap<Options>(newOptions);
+    IO::ResizeWindow(g_options.windowWidth, g_options.windowHeight);
+
+    size_t len = wcslen(path.c_str()) + 1;
+    char* charPath = new char[len];
+    wcstombs(charPath, path.c_str(), len);
+    std::cout << "Loaded options from: " << charPath << std::endl;
+    delete[] charPath;
+}
+
 int main() {
     IO::OpenWindow(g_options.windowWidth, g_options.windowHeight);
 
@@ -81,6 +122,10 @@ int main() {
         mandelbrotCuda(g_options, (float)g_options.baseIterations * powl(g_options.camera.zoom, 1.0l / g_options.iterationIncreaseFallOff));
 
         IO::Render();
+
+        if (IO::FileDropped()) {
+            HandleDroppedFile(IO::GetDroppedFilePath());
+        }
     }
 
     IO::Quit();

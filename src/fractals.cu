@@ -80,7 +80,7 @@ cudaError_t mandelbrotCuda(Options options, int maxIterations) {
     // Choose which GPU to run on, change this on a multi-GPU system.
     cudaStatus = cudaSetDevice(0);
     if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaSetDevice failed!  Do you have a CUDA-capable GPU installed?");
+        fprintf(stderr, "cudaSetDevice failed! Do you have a CUDA-capable GPU installed? ");
     }
 
     // Allocate GPU buffers for three vectors (two input, one output)    .
@@ -92,9 +92,9 @@ cudaError_t mandelbrotCuda(Options options, int maxIterations) {
     dim3 block_size(16, 16);
     dim3 grid_size(options.windowWidth / block_size.x, options.windowHeight / block_size.y);
 
-    calcMandelbrot << < grid_size, block_size >> > (gpuBuffer, options, maxIterations);
+    calcMandelbrot <<<grid_size, block_size >>> (gpuBuffer, options, maxIterations);
 
-    //// Check for any errors launching the kernel
+    // Check for any errors launching the kernel
     cudaStatus = cudaGetLastError();
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaStatus));

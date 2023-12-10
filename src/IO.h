@@ -34,6 +34,7 @@ struct SDL_Instance {
 	Uint8 mouseButtons = 0;
 	Uint8 prevMouseButtons = 0;
 	float mouseScrollAmount = 0;
+	std::wstring droppedFilePath;
 
 	int windowWidth, windowHeight;
 
@@ -128,6 +129,19 @@ inline int GetWindowWidth() {
 
 inline int GetWindowHeight() {
 	return SDL_Instance::instance().windowHeight;
+}
+
+inline bool FileDropped() {
+	return SDL_Instance::instance().droppedFilePath.length() > 0;
+}
+
+inline const std::wstring& GetDroppedFilePath() {
+	return SDL_Instance::instance().droppedFilePath;
+}
+
+inline void ResizeWindow(int width, int height) {
+	SDL_Instance::instance().output.resize(width, height);
+	SDL_SetWindowSize(SDL_Instance::instance().window, width, height);
 }
 
 }
