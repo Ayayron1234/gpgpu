@@ -47,9 +47,9 @@ Utilize the *Properties* window to control various aspects of the fractal visual
 
 ![](screenshots/max-iterations.gif)
 
+Resume your fractal exploration with the drag-and-drop feature for importing JSON files. Simply drag a previously saved *options.json* file containing fractal parameters onto the application window, and watch as the program dynamically loads the data. This functionality allows users to switch between different configurations, providing a way to explore and compare various fractal landscapes.
 
-
-
+![](screenshots/drag-and-drop.gif)
 ## Implementation
 ### Fractals
 The Mandelbrot set is a captivating mathematical fractal defined through the iterative process $$z_{n+1}=z_n^2+c$$, where $c$ is a complex constant. Its visual representation exhibits intricate, self-replicating patterns in the complex plane. The Julia set, intimately linked to the Mandelbrot set, explores variations of this equation by considering different values of $c$, unveiling a diverse range of captivating visualizations within the broader Mandelbrot framework.
