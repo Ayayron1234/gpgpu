@@ -12,7 +12,7 @@ Embark on a visual journey into the Mandelbrot and Julia sets with this CUDA-acc
 - **ImGui Integration:** Seamlessly interact with the program through ImGui, allowing users to set and manipulate fractal parameters in real-time.
 - **Flexible Julia Set Rendering:** Set custom parameters for the Julia set, enabling exploration of a vast array of captivating fractal shapes.
 - **Fractal State Persistence:** Save and load the current position in the fractal space, along with window properties, to a JSON file. This feature allows users to resume exploration exactly where they left off in previous sessions.
-
+- **Drag and Drop JSON Import:** Import fractal parameters by dragging and dropping JSON files onto the application window.
 
 <div style="page-break-after: always;"></div>
 
