@@ -7,7 +7,8 @@
 using Float = long double;
 
 struct vec2 {
-	Float x, y;
+	Float x;
+	Float y;
 
 	__host__ __device__ vec2(Float x0 = 0, Float y0 = 0) { x = x0; y = y0; }
 	__host__ __device__ vec2 operator*(Float a) const { return vec2(x * a, y * a); }
@@ -18,7 +19,7 @@ struct vec2 {
 	__host__ __device__ vec2 operator-() const { return vec2(-x, -y); }
 };
 
-__host__ __device__ inline float dot(const vec2& v1, const vec2& v2) {
+__host__ __device__ inline Float dot(const vec2& v1, const vec2& v2) {
 	return (v1.x * v2.x + v1.y * v2.y);
 }
 

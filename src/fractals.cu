@@ -5,25 +5,6 @@
 
 #include <stdio.h>
 
-__device__ vec2 calcNext(vec2 z, vec2 c) {
-    const Float zr = z.x * z.x - z.y * z.y;
-    const Float zi = 2.f * z.x * z.y;
-
-    return vec2{ zr, zi } + c;
-}
-
-__device__ int calcIterations(vec2 z0, vec2 c, int max_iter) {
-    vec2 zn = z0;
-    int iter = 0;
-
-    while ((zn.x * zn.x + zn.y * zn.y <= 4.0f) && (iter < max_iter)) {
-        zn = calcNext(zn, c);
-        iter++;
-    }
-
-    return iter;
-}
-
 __device__ Float maxf(Float a, Float b) {
     return (a > b) ? a : b;
 }
@@ -32,6 +13,13 @@ __device__ Float minf(Float a, Float b) {
     return (a < b) ? a : b;
 }
 
+/**
+ * CUDA kernel function: Computes the color of a pixel in the Mandelbrot or Julia set and stores it in the buffer.
+ *
+ * @param buffer - The output buffer storing RGB values of pixels.
+ * @param options - The Mandelbrot set properties and camera configuration.
+ * @param maxIterations - The maximum number of iterations for the fractal computation.
+ */
 __global__ void calcMandelbrot(IO::RGB* buffer, Options options, int maxIterations) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -42,6 +30,8 @@ __global__ void calcMandelbrot(IO::RGB* buffer, Options options, int maxIteratio
     Float y0 = (((Float)row / (Float)options.windowHeight) / options.camera.zoom - (0.5 / options.camera.zoom) - options.camera.position.y) / wph;
 
     vec2 z, c;
+
+    // Determine the initial values for the fractal computation based on the selected type
     if (options.type == FractalType::Mandelbrot) {
         z = options.GetProperty();
         c = { x0, y0 };
@@ -51,6 +41,7 @@ __global__ void calcMandelbrot(IO::RGB* buffer, Options options, int maxIteratio
         c = options.GetProperty();
     }
 
+    // Iterate to determine the color of the pixel
     int iter = 0;
     Float xtemp = 0;
     while ((z.x * z.x + z.y * z.y <= 4.0f) && (iter < maxIterations)) {
@@ -60,6 +51,7 @@ __global__ void calcMandelbrot(IO::RGB* buffer, Options options, int maxIteratio
         iter++;
     }
 
+    // Compute the color intensity based on the iteration count and the length of the complex number
     Float color = 
         //5.0 * 
         ((Float)iter 
@@ -67,7 +59,7 @@ __global__ void calcMandelbrot(IO::RGB* buffer, Options options, int maxIteratio
          -  log2f(maxf(1.f, log2f(length(z))))
         );
 
-
+    // Store the RGB color values in the buffer, clamped to the range [0, 255]
     buffer[i].r = minf(255.f, color);
     buffer[i].g = minf(255.f, color);
     buffer[i].b = minf(255.f, color);
